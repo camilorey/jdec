@@ -9,27 +9,11 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		int[] test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 1);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 2);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 3);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 4);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 5);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 6);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 7);
-		test = new int[] { 0, 0, 0, 0, 1, 2, 3, 4, 0, 0, 5, 6, 7, 0, 0 };
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 1);
-		Combinatorial.rotateLeftDisjoint(test, 4, 7, 10, 12, 1);
-		for (int[] permutation : Combinatorial.permutationIndices(4)) {
+		int[] test = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		for (int[] combination : Combinatorial.combinations(test, 2, true)) {
 			System.out.print("[");
 
-			for (int a : permutation)
+			for (int a : combination)
 				System.out.print(a + ", ");
 
 			System.out.print("]\n");

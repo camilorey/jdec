@@ -47,7 +47,12 @@ public class Combinatorial {
 
 	public static void rotateLeftDisjoint(int[] data, int start1, int end1,
 			int start2, int end2, int k) {
-		k %= (end1 - start1 + 1) + (end2 - start2 + 1);
+		int interval = (end1 - start1 + 1) + (end2 - start2 + 1);
+		if (interval == 0)
+			return;
+		k %= interval;
+		if (k == 0)
+			return;
 		if (start1 + k <= end1) {
 			reverse(data, start1, start1 + k - 1);
 			reverseDisjoint(data, start1 + k, end1, start2, end2);
@@ -101,104 +106,6 @@ public class Combinatorial {
 		reverse(data, 0, k - 1);
 		reverse(data, k, data.length - 1);
 	}
-
-	//
-	// /**
-	// * Greatest common divisor using Euclid's algorithm
-	// *
-	// * @param n
-	// * number > 0
-	// * @param m
-	// * number > 0
-	// * @return gcd
-	// */
-	// private static int gcd(int n, int m) {
-	// int gcd = n;
-	// for (int div = m; div != 0;) {
-	// gcd %= div;
-	// // swap gcd and div
-	// div ^= gcd;
-	// gcd ^= div;
-	// div ^= gcd;
-	// }
-	// return gcd;
-	// }
-	//
-	// /**
-	// * Rotate an array over two disjoint sections. Created by Hannu Helminem.
-	// *
-	// * @param data
-	// * input array
-	// * @param start1
-	// * start of first interval
-	// * @param end1
-	// * end of first interval
-	// * @param start2
-	// * start of second interval
-	// * @param end2
-	// * end of second interval
-	// * @param k
-	// * amount of rotation
-	// */
-	// private static void disjointRotate(int[] data, int start1, int end1,
-	// int start2, int end2, int k) {
-	// int size1 = end1 - start1;
-	// int size2 = end2 - start2;
-	// int total = size1 + size2;
-	// int gcd = gcd(total, size2);
-	// int skip = total / gcd - 1;
-	// for (int i = 0; i < gcd; i++) {
-	// int curr = i < size1 ? start1 + i : start2 + (i - size1);
-	// int ctr = i;
-	// int v = curr;
-	// for (int j = 0; j < skip; j++) {
-	// ctr = (ctr + size1) % total;
-	// int next = ctr < size1 ? start1 + ctr : start2 + (ctr - size1);
-	// swap(data, curr, next);
-	// curr = next;
-	// }
-	// swap(data, v, curr);
-	// }
-	// }
-	//
-	//
-	//
-	// /**
-	// * Rotate an array over two disjoint sections. Created by Hannu Helminem.
-	// *
-	// * @param data
-	// * input array
-	// * @param start1
-	// * start of first interval
-	// * @param end1
-	// * end of first interval
-	// * @param start2
-	// * start of second interval
-	// * @param end2
-	// * end of second interval
-	// * @param k
-	// * amount of rotation
-	// */
-	// private static <T> void disjointRotate(T[] data, int start1, int end1,
-	// int start2, int end2) {
-	// int size1 = end1 - start1;
-	// int size2 = end2 - start2;
-	// int total = size1 + size2;
-	// int gcd = gcd(total, size2);
-	// int skip = total / gcd - 1;
-	// for (int i = 0; i < gcd; i++) {
-	// int curr = i < size1 ? start1 + i : start2 + (i - size1);
-	// int ctr = i;
-	// int v = curr;
-	// for (int j = 0; j < skip; j++) {
-	// ctr = (ctr + size1) % total;
-	// int next = ctr < size1 ? start1 + ctr : start2 + (ctr - size1);
-	// swap(data, curr, next);
-	// curr = next;
-	// }
-	// swap(data, v, curr);
-	// }
-	// }
 
 	/**
 	 * Adapted from <a href=http://rosettacode.org/wiki/User:Margusmartsepp
@@ -362,7 +269,7 @@ public class Combinatorial {
 	 *            the int array on which to generate permutation.
 	 * @return
 	 */
-	public static Iterable<int[]> combinations(int[] array, int k,
+	public static Iterable<int[]> combinations(int[] array, final int k,
 			boolean inPlace) {
 		final int dim = array.length;
 		final int[] data = inPlace ? array : Arrays.copyOf(array, dim);
@@ -370,7 +277,7 @@ public class Combinatorial {
 		return new Iterable<int[]>() {
 			public Iterator<int[]> iterator() {
 				return new Iterator<int[]>() {
-					private int c = -1, d, s;
+					private int h = -1, t;
 					private boolean hasNext = data.length != 0;
 
 					public boolean hasNext() {
@@ -380,40 +287,37 @@ public class Combinatorial {
 					public int[] next() {
 						if (!hasNext)
 							throw new NoSuchElementException();
-						if (!(c < 0)) {
-							// do the swaps: place s in currently first
-							// position, and reverse the part of the list to the
-							// right
-							swap(c, s);
-							while (--d > ++c)
-								swap(c, d);
-							c = -1;
+						if (!(h < 0)) {
+							// do the swaps: swap head with tail
+							swap(data, h, t);
+							// rotate the rest
+							rotateLeftDisjoint(data, h + 1, k - 1, t + 1,
+									dim - 1, k - 1 - h);
+							h = -1;
 						}
 						// prepare for next iteration
-						// find the first element that is not in descending
-						// order, starting from the end
-						for (int i = dim - 2; i >= 0; i--)
-							if (data[i] < data[i + 1]) {
-								c = i;
+						// find first element in head section less than the last
+						// one
+						t = dim - 1;
+						for (int i = k - 1; i >= 0; i--)
+							if (data[i] < data[t]) {
+								h = i;
 								break;
 							}
 
 						// if none found, i.e., all is in descending order,
-						// we have finished the permutations
-						if (c < 0)
+						// we have finished the combinations
+						if (h < 0)
 							hasNext = false;
 
-						else {
-							// find the smallest value, starting from next
-							// element
-							// (c + 1), larger than j
-							s = c + 1;
-							d = dim;
-							for (int j = c + 2; j < d; j++)
-								if (data[j] < data[s] && //
-										data[j] > data[c])
-									s = j;
-						}
+						// find last element in tail section larger than the
+						// head one
+						for (; t >= k; t--)
+							if (data[t] <= data[h]) {
+								break;
+							}
+						t++;
+
 						return data;
 					}
 
