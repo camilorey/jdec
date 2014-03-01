@@ -9,7 +9,8 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		int[] test = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		int[] test = new int[] { 0, 1, 2, 3, 4 };
+		int c = 0;
 		for (int[] combination : Combinatorial.combinations(test, 2, true)) {
 			System.out.print("[");
 
@@ -17,6 +18,8 @@ public class Test {
 				System.out.print(a + ", ");
 
 			System.out.print("]\n");
+			c++;
 		}
+		System.out.println(c);
 	}
 }
