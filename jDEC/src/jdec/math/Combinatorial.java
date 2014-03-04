@@ -1,4 +1,4 @@
-package jdec.math.combinatorial;
+package jdec.math;
 
 import java.util.Arrays;
 import java.util.Iterator;

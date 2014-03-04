@@ -1,6 +1,6 @@
 package jdec.test;
 
-import jdec.math.combinatorial.Combinatorial;
+import jdec.math.Combinatorial;
 
 public class Test {
 
@@ -9,9 +9,9 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		int[] test = new int[] { 0, 1, 2, 3, 4 };
+		int[] test = new int[] { 0, 0, 0, 1, 1, 2 };
 		int c = 0;
-		for (int[] combination : Combinatorial.combinations(test, 2, true)) {
+		for (int[] combination : Combinatorial.combinations(test, 3, true)) {
 			System.out.print("[");
 
 			for (int a : combination)
