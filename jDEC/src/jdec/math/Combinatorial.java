@@ -459,4 +459,11 @@ public class Combinatorial {
 		return combinations(indices, k, true);
 	}
 
+	public static int factorial(int n) {
+		int factorial = 1;
+		for (int j = n; j > 1; j--)
+			factorial *= j;
+		return factorial;
+	}
+
 }

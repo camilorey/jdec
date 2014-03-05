@@ -2,13 +2,8 @@ package jdec.math;
 
 import java.util.Arrays;
 
-import javax.swing.text.AbstractDocument.LeafElement;
-
-import no.uib.cipr.matrix.DenseCholesky;
+import no.uib.cipr.matrix.DenseLU;
 import no.uib.cipr.matrix.DenseMatrix;
-import no.uib.cipr.matrix.DenseVector;
-import no.uib.cipr.matrix.UpperSPDDenseMatrix;
-import no.uib.cipr.matrix.Vector;
 
 public class Circumcenter {
 
@@ -43,42 +38,39 @@ public class Circumcenter {
 		DenseMatrix m = new DenseMatrix(points);
 		int n = m.numRows();
 		int k = m.numColumns();
-		if (n != k + 1)
+		if (n > k + 1)
 			throw new IllegalArgumentException(
 					"Cannot evaluate barycentric coordinates in dimension " + k
 							+ " w.r.t. " + n + " points");
-		UpperSPDDenseMatrix A = new UpperSPDDenseMatrix(n + 1);
+		DenseMatrix A = new DenseMatrix(n + 1, n + 1);
+		DenseMatrix x = new DenseMatrix(n + 1, 1);
 		for (int i = 0; i < n; i++)
-			for (int j = i; j < n; j++)
+			for (int j = 0; j < n; j++) {
+				double scal = 0;
 				for (int c = 0; c < k; c++)
-					A.add(j, i, 2 * points[i][c] * points[j][c]);
+					scal += points[i][c] * points[j][c];
+				A.set(i, j, 2 * scal);
+				if (i == j)
+					x.set(i, 0, scal);
+			}
 		for (int i = 0; i < n; i++) {
 			A.set(i, n, 1);
+			A.set(n, i, 1);
 		}
-		Vector b = new DenseVector(n + 1);
-		for (int i = 0; i < n; i++)
-			for (int j = 0; j < k; j++)
-				b.add(i, points[i][j] * points[i][j]);
-		b.set(n, 1);
-		DenseMatrix x = new DenseMatrix(n + 1, 1);
-		// TODO: check that it IS SPD !!
-		DenseCholesky chol = new DenseCholesky(n + 1, true);
-		assert chol.isSPD();
-		chol.factor(A).solve(x);
+		x.set(n, 0, 1);
+		new DenseLU(n + 1, n + 1).factor(A).solve(x);
 		return Arrays.copyOf(x.getData(), n);
 	}
 
-	public double[] circumcenter(double[][] points) {
+	public static double[] circumcenter(double[][] points) {
 		double[] bary = barycentricCoordCircumcenter(points);
 		double[] center = new double[points[0].length + 1];
-		for (double[] point : points)
-			for (int j = 0; j < point.length; j++)
-				center[j] += bary[j] * point[j];
-		for (int j = 0; j < center.length - 1; j++) {
-			center[j] /= points.length;
+		for (int i = 0; i < points.length; i++)
+			for (int j = 0; j < points[i].length; j++)
+				center[j] += bary[i] * points[i][j];
+		for (int j = 0; j < center.length - 1; j++)
 			center[center.length - 1] += (center[j] - points[0][j])
 					* (center[j] - points[0][j]);
-		}
 		center[center.length - 1] = Math.sqrt(center[center.length - 1]);
 		return center;
 	}

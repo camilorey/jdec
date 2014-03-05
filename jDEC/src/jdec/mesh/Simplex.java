@@ -6,6 +6,8 @@ import java.util.List;
 
 import jdec.math.Parity;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public class Simplex {
 	private final int parity;
 	private final int[] array;
@@ -40,5 +42,23 @@ public class Simplex {
 			boundary.add(new Simplex(boundaryElement, (this.parity + n) % 2));
 		}
 		return boundary;
+	}
+
+	@Override
+	public String toString() {
+		String returnString = "simplex([";
+		for (int i = 0; i < dimension - 1; i++) {
+			returnString += array[i] + ", ";
+			returnString += array[dimension - 1] + "]";
+		}
+		return returnString + ", parity=" + parity + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
+		for (int p : array)
+			hashCodeBuilder.append(p);
+		return hashCodeBuilder.append(parity).build();
 	}
 }
