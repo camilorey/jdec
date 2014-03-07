@@ -1,7 +1,6 @@
 package jdec.test;
 
-import jdec.math.Circumcenter;
-import jdec.math.Volume;
+import jdec.dec.SimplexArray;
 
 public class Test {
 
@@ -10,30 +9,39 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 
-		System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0 } }));
-		System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0 },
-				{ 1, 0 } }));
-		System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0, 0 },
-				{ 0, 1, 0 }, { 1, 0, 0 } }));
+		int[][] s = new int[][] { { 0, 1 }, { 0, 2 }, { 1, 2 }, { 1, 3 } };
+		int[][] v = new int[][] { { 1, 2 }, { 0, 2 } };
+		for (int i : SimplexArray.simplexArraySearchSorted(s, v))
+			System.out.print(i + " ");
+		System.out.println();
 
-		System.out
-				.println(Volume.signedVolume(new double[][] { { 0 }, { 1 } }));
-		System.out.println(Volume.signedVolume(new double[][] { { 0, 0 },
-				{ 1, 0 }, { 0, 1 } }));
-		System.out.println(Volume.signedVolume(new double[][] { { 0, 0, 0 },
-				{ 3, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));
-
-		printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
-				{ 0 }, { 4 } }));
-		printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
-				{ 0, 0 }, { 4, 0 } }));
-		printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
-				{ 0, 0 }, { 4, 0 }, { 0, 4 } }));
-		printArray(Circumcenter.circumcenter(new double[][] { { 0 }, { 1 } }));
-		printArray(Circumcenter.circumcenter(new double[][] { { 0, 0 },
-				{ 1, 0 } }));
-		printArray(Circumcenter.circumcenter(new double[][] { { 0, 0 },
-				{ 1, 0 }, { 0, 1 } }));
+		// System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0 }
+		// }));
+		// System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0 },
+		// { 1, 0 } }));
+		// System.out.println(Volume.unsignedVolume(new double[][] { { 0, 0, 0
+		// },
+		// { 0, 1, 0 }, { 1, 0, 0 } }));
+		//
+		// System.out
+		// .println(Volume.signedVolume(new double[][] { { 0 }, { 1 } }));
+		// System.out.println(Volume.signedVolume(new double[][] { { 0, 0 },
+		// { 1, 0 }, { 0, 1 } }));
+		// System.out.println(Volume.signedVolume(new double[][] { { 0, 0, 0 },
+		// { 3, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }));
+		//
+		// printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
+		// { 0 }, { 4 } }));
+		// printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
+		// { 0, 0 }, { 4, 0 } }));
+		// printArray(Circumcenter.barycentricCoordCircumcenter(new double[][] {
+		// { 0, 0 }, { 4, 0 }, { 0, 4 } }));
+		// printArray(Circumcenter.circumcenter(new double[][] { { 0 }, { 1 }
+		// }));
+		// printArray(Circumcenter.circumcenter(new double[][] { { 0, 0 },
+		// { 1, 0 } }));
+		// printArray(Circumcenter.circumcenter(new double[][] { { 0, 0 },
+		// { 1, 0 }, { 0, 1 } }));
 
 	}
 

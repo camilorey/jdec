@@ -84,7 +84,7 @@ public class SimplicialMesh {
 		}
 	}
 
-	public double[][] getPoints() {
+	public double[][] getVertices() {
 		return vertices;
 	}
 

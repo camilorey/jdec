@@ -16,43 +16,43 @@ public class Combinatorial {
 	private Combinatorial() {
 	}
 
-	private static <T> void swap(T[] data, int i, int j) {
+	public static <T> void swap(T[] data, int i, int j) {
 		T t = data[i];
 		data[i] = data[j];
 		data[j] = t;
 	}
 
-	private static void swap(int[] data, int i, int j) {
+	public static void swap(int[] data, int i, int j) {
 		data[i] ^= data[j];
 		data[j] ^= data[i];
 		data[i] ^= data[j];
 	}
 
-	private static void reverse(int[] data, int start, int end) {
+	public static void reverse(int[] data, int start, int end) {
 		while (end > start)
 			swap(data, start++, end--);
 	}
 
-	private static <T> void reverse(T[] data, int start, int end) {
+	public static <T> void reverse(T[] data, int start, int end) {
 		while (end > start)
 			swap(data, start++, end--);
 	}
 
-	private static void rotateLeft(int[] data, int k) {
+	public static void rotateLeft(int[] data, int k) {
 		k %= data.length;
 		reverse(data, 0, k - 1);
 		reverse(data, k, data.length - 1);
 		reverse(data, 0, data.length - 1);
 	}
 
-	private static <T> void rotateLeft(T[] data, int k) {
+	public static <T> void rotateLeft(T[] data, int k) {
 		k %= data.length;
 		reverse(data, 0, k - 1);
 		reverse(data, k, data.length - 1);
 		reverse(data, 0, data.length - 1);
 	}
 
-	public static void rotateLeftDisjoint(int[] data, int start1, int end1,
+	private static void rotateLeftDisjoint(int[] data, int start1, int end1,
 			int start2, int end2, int k) {
 		int interval = (end1 - start1 + 1) + (end2 - start2 + 1);
 		if (interval == 0)
@@ -71,7 +71,7 @@ public class Combinatorial {
 		reverseDisjoint(data, start1, end1, start2, end2);
 	}
 
-	public static <T> void rotateLeftDisjoint(T[] data, int start1, int end1,
+	private static <T> void rotateLeftDisjoint(T[] data, int start1, int end1,
 			int start2, int end2, int k) {
 		int interval = (end1 - start1 + 1) + (end2 - start2 + 1);
 		if (interval == 0)
@@ -138,13 +138,13 @@ public class Combinatorial {
 			}
 	}
 
-	private static void rotateRight(int[] data, int k) {
+	public static void rotateRight(int[] data, int k) {
 		reverse(data, 0, data.length - 1);
 		reverse(data, 0, k - 1);
 		reverse(data, k, data.length - 1);
 	}
 
-	private static <T> void rotateRight(T[] data, int k) {
+	public static <T> void rotateRight(T[] data, int k) {
 		reverse(data, 0, data.length - 1);
 		reverse(data, 0, k - 1);
 		reverse(data, k, data.length - 1);
