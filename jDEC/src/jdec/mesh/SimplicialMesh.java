@@ -55,16 +55,13 @@ public class SimplicialMesh {
 		this.faces = skeleton(manifoldDimension() - 1);
 
 		faceToSimplex = new Object2ObjectOpenHashMap<Simplex, IntSet>();
+		for (Simplex face : faces)
+			faceToSimplex.put(face, new IntOpenHashSet());
 		for (Entry<Simplex> simplexAndIndex : simplexToIndex
 				.object2IntEntrySet()) {
-			for (Simplex b : simplexAndIndex.getKey().boundary()) {
-				IntSet indices;
-				if ((indices = faceToSimplex.get(b)) == null) {
-					indices = new IntOpenHashSet();
-					faceToSimplex.put(b, indices);
-				}
-				indices.add(simplexAndIndex.getValue());
-			}
+			for (Simplex b : simplexAndIndex.getKey().boundary())
+				faceToSimplex.get(b).add(simplexAndIndex.getIntValue());
+
 		}
 		simplexNeigbors = new IntSet[elements.length];
 		for (Entry<Simplex> simplexAndIndex : simplexToIndex

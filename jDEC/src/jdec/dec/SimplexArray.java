@@ -1,8 +1,11 @@
 package jdec.dec;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
+import java.util.Arrays;
+
+import jdec.math.LexicographicalComparator;
 import jdec.math.Parity;
 import no.uib.cipr.matrix.sparse.CompRowMatrix;
 
@@ -50,42 +53,66 @@ public class SimplexArray {
 
 	}
 
-	public static simplexArrayBoundary(int[][] s, int[] parity) {
+	public static int[][] simplexArrayBoundary(int[][] s, int[] parity,
+			CompRowMatrix boundaryOperator) {
 
 		int nSimplices = s.length;
 		int facesPerSimplex = s[0].length;
 		int nFaces = nSimplices * facesPerSimplex;
 
 		// faces is an array constructed as follows:
-		// faces[ . , [0,n-2) ] are the indices of the faces
-		// faces[ . , n-2 ] is the index of the simplex whose boundary produced
+		// faces[ . , [0,n-1) ] are the indices of the faces
+		// faces[ . , n-1 ] is the index of the simplex whose boundary produced
 		// the face
-		// faces[ . , n-1] is the orientation of the face in the boundary
+		// faces[ . , n] is the orientation of the face in the boundary
+		// where n is the dimension of the input simplices
 		int[][] faces = new int[nFaces][facesPerSimplex + 1];
 		for (int i = 0; i < facesPerSimplex; i++) {
-			faces nSimplices * i -- nSimplices*i+1;
-			
+			int fStart = nSimplices * i;
+			for (int f = fStart; f < fStart + nSimplices; f++) {
+				System.arraycopy(s[f], 0, faces[f], 0, i);
+				System.arraycopy(s[f], i + 1, faces[f], i, facesPerSimplex - i
+						- 1);
+				faces[f][facesPerSimplex - 1] = f - fStart;
+				faces[f][facesPerSimplex] = (parity[i] + i) % 2 == 0 ? 1 : -1;
+			}
 		}
 
-		CompRowMatrix boundaryOperator = new CompRowMatrix(numRows, numColumns, nz);
+		// sort faces lexicographically
+		LexicographicalComparator comparator = LexicographicalComparator
+				.getComparator(facesPerSimplex - 1);
+		Arrays.sort(faces, comparator);
 
+		// find unique faces
+		IntList indices = new IntArrayList();
+		int[] prevFace = null;
+		for (int i = 0; i < nFaces; i++) {
+			if (prevFace == null || comparator.compare(prevFace, faces[i]) != 0)
+				indices.add(i);
+			prevFace = faces[i];
+		}
+
+		// build unique faces list and boundary operator arrays
+
+		int nUniqueFaces = indices.size();
+		int[][] uniqueFaces = new int[nUniqueFaces][];
+		int[] rowPtrs = new int[nUniqueFaces + 1];
+		int c = 0;
+		for (int f : indices) {
+			// row pointers are the indices of the unique faces
+			rowPtrs[c] = f;
+			uniqueFaces[c++] = faces[f];
+		}
+		rowPtrs[nUniqueFaces] = nFaces;
+
+		// the column indices are the generating simplices indices
+		// matrix elements are +1/-1 according to relative orientation
+		int[] csrIndices = new int[faces.length];
+		double[] csrData = new double[faces.length];
+		for (int i = 0; i < faces.length; i++) {
+			csrIndices[i] = faces[i][facesPerSimplex - 1];
+			csrData[i] = faces[i][facesPerSimplex];
+		}
+		return uniqueFaces;
 	}
-
-	private static class LexicographicalComparator implements Comparator<int[]> {
-		private final int dim;
-
-		public LexicographicalComparator(int dim) {
-			this.dim = dim;
-		}
-
-		public int compare(int[] arg0, int[] arg1) {
-			for (int i = 0; i < dim; i++)
-				if (arg0[i] < arg1[i])
-					return -1;
-				else if (arg0[i] > arg1[i])
-					return 1;
-			return 0;
-		}
-	}
-
 }
