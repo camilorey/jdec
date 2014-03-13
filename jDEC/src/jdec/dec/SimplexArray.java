@@ -42,7 +42,7 @@ public class SimplexArray {
 	 * 
 	 * @return
 	 */
-	public static int[] simplexRelativeParity(int[][] s) {
+	public static int[] simplexParity(int[][] s) {
 		int n = s.length;
 		int[] parity = new int[n];
 
