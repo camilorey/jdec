@@ -25,7 +25,7 @@ public class OperatorAtA extends AbstractOperator {
 			Ax = x.copy();
 		// compute Ax
 		A.mult(x, Ax);
-		// compue At(Ax)+y
+		// compute At(Ax)+y
 		Vector result = A.transMultAdd(alpha, Ax, y);
 		vectorPool.offer(Ax);
 		return result;

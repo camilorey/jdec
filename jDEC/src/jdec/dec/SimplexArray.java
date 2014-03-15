@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.Arrays;
 
+import jdec.linalg.CRSMatrix;
 import jdec.math.LexicographicalComparator;
 import jdec.math.Parity;
 import no.uib.cipr.matrix.sparse.CompRowMatrix;
@@ -113,6 +114,7 @@ public class SimplexArray {
 			csrIndices[i] = faces[i][facesPerSimplex - 1];
 			csrData[i] = faces[i][facesPerSimplex];
 		}
+		new CRSMatrix(nUniqueFaces, nSimplices, csrData, csrIndices, rowPtrs);
 		return uniqueFaces;
 	}
 }
