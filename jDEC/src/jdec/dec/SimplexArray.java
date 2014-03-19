@@ -5,10 +5,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.Arrays;
 
-import jdec.linalg.CRSMatrix;
+import jdec.linalg.CSRMatrix;
 import jdec.math.LexicographicalComparator;
 import jdec.math.Parity;
-import no.uib.cipr.matrix.sparse.CompRowMatrix;
+import no.uib.cipr.matrix.Matrix;
 
 public class SimplexArray {
 
@@ -54,8 +54,18 @@ public class SimplexArray {
 
 	}
 
-	public static int[][] simplexArrayBoundary(int[][] s, int[] parity,
-			CompRowMatrix boundaryOperator) {
+	static class BoundaryOperator {
+		final int[][] uniqueFaces;
+		final Matrix operator;
+
+		public BoundaryOperator(int[][] uFaces, Matrix op) {
+			this.uniqueFaces = uFaces;
+			this.operator = op;
+
+		}
+	}
+
+	public static BoundaryOperator simplexArrayBoundary(int[][] s, int[] parity) {
 
 		int nSimplices = s.length;
 		int facesPerSimplex = s[0].length;
@@ -114,7 +124,7 @@ public class SimplexArray {
 			csrIndices[i] = faces[i][facesPerSimplex - 1];
 			csrData[i] = faces[i][facesPerSimplex];
 		}
-		new CRSMatrix(nUniqueFaces, nSimplices, csrData, csrIndices, rowPtrs);
-		return uniqueFaces;
+		return new BoundaryOperator(uniqueFaces, new CSRMatrix(nUniqueFaces,
+				nSimplices, csrData, csrIndices, rowPtrs));
 	}
 }

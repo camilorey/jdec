@@ -4,13 +4,13 @@ import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.Vector;
 
-public class CRSMatrix extends AbstractOperator {
+public class CSRMatrix extends AbstractOperator {
 
 	private final double[] a;
 	private final int[] ja;
 	private final int[] ia;
 
-	public CRSMatrix(int numRows, int numColumns, double[] data,
+	public CSRMatrix(int numRows, int numColumns, double[] data,
 			int[] columnIndex, int[] rowPtr) {
 		super(numRows, numColumns);
 		this.a = data;
@@ -18,6 +18,17 @@ public class CRSMatrix extends AbstractOperator {
 		this.ja = columnIndex;
 		assert a.length == ja.length;
 		assert ia.length == numRows + 1;
+	}
+
+	/**
+	 * creates an empty CSR Matrix
+	 * 
+	 * @param numRows
+	 * @param numColumns
+	 */
+	public CSRMatrix(int numRows, int numColumns) {
+		this(numRows, numColumns, new double[0], new int[0],
+				new int[numRows + 1]);
 	}
 
 	@Override
@@ -57,11 +68,81 @@ public class CRSMatrix extends AbstractOperator {
 			for (int i = 0; i < a.length; i++)
 				a[i] *= alpha;
 		return this;
+
 	}
 
 	@Override
 	public Matrix transpose() {
-		return;
+		double[] aT = new double[a.length];
+		int[] iaT = new int[numColumns + 1];
+		int[] jaT = new int[a.length];
+
+		// find out the number of elements in each column
+		int[] count = new int[numColumns];
+		for (int i = 0; i < a.length; i++)
+			count[ja[i]]++;
+
+		// fill the transpose matrix's row pointers
+		for (int i = 1; i < numColumns; i++) {
+			iaT[i] = iaT[i - 1] + count[i];
+			// count[i] will be useful in next section
+			count[i] = iaT[i];
+		}
+		iaT[numColumns] = a.length;
+
+		// now fill data and
+		int q;
+		for (int i = 0; i < numRows; i++)
+			for (int j = ia[i]; j < ia[i + 1]; j++) {
+				// i will be the transpose matrix's column number
+				// q contains the pointer to the next data slot
+				jaT[q = count[ja[j]]++] = i;
+				aT[q] = a[j];
+			}
+
+		return new CSRMatrix(numColumns, numRows, aT, jaT, iaT);
+
+	}
+
+	/**
+	 * Returns a Matrix acting as the transpose of this matrix. not recommended,
+	 * as mult/transMult performances are inverted, with transposeMult being
+	 * faster than mult. Most algorithms expect the opposite behavior.
+	 * 
+	 * @return
+	 */
+	public Matrix transposeSymbolic() {
+		return new CSRMatrix(numColumns, numRows, a, ja, ia) {
+			@Override
+			public Vector multAdd(double alpha, Vector x, Vector y) {
+				return CSRMatrix.this.transMultAdd(alpha, x, y);
+			}
+
+			@Override
+			public Vector transMultAdd(double alpha, Vector x, Vector y) {
+				return CSRMatrix.this.multAdd(alpha, x, y);
+			}
+
+			@Override
+			public double norm(Norm type) {
+				switch (type) {
+				case Infinity:
+					return CSRMatrix.this.norm(Norm.One);
+				case One:
+					return CSRMatrix.this.norm(Norm.Infinity);
+				default:
+					return CSRMatrix.this.norm(type);
+				}
+
+			}
+
+			@Override
+			public Matrix transpose() {
+				return CSRMatrix.this;
+			}
+
+		};
+
 	}
 
 	@Override

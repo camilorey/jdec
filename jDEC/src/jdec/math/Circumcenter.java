@@ -74,4 +74,12 @@ public class Circumcenter {
 		center[center.length - 1] = Math.sqrt(center[center.length - 1]);
 		return center;
 	}
+
+	public static double[] circumcenter(double[][] points, int[] indices) {
+		double[][] selPoints = new double[indices.length][];
+		int c = 0;
+		for (int idx : indices)
+			selPoints[c++] = points[idx];
+		return circumcenter(selPoints);
+	}
 }

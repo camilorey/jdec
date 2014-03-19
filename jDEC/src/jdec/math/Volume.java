@@ -76,4 +76,21 @@ public class Volume {
 
 		return det;
 	}
+
+	public static double[][] selectPoints(double[][] points, int[] indices) {
+		double[][] selPoints = new double[indices.length][];
+		int c = 0;
+		for (int idx : indices)
+			selPoints[c++] = points[idx];
+		return selPoints;
+	}
+
+	public static double unsignedVolume(double[][] points, int[] indices) {
+		return unsignedVolume(selectPoints(points, indices));
+	}
+
+	public static double signedVolume(double[][] points, int[] indices) {
+		return signedVolume(selectPoints(points, indices));
+	}
+
 }
