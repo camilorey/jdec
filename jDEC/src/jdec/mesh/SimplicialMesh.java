@@ -150,12 +150,8 @@ public class SimplicialMesh {
 		if (manifoldDimension == 0)
 			return;
 		if (manifoldDimension == embeddingDimension) {
-			double[][] points = new double[manifoldDimension + 1][];
 			for (int[] element : elements) {
-				int c = 0;
-				for (int point : element)
-					points[c++] = this.vertices[point];
-				if (Volume.signedVolume(points) < 0) {
+				if (Volume.signedVolume(this.vertices, element) < 0) {
 					// change sign to the element by swapping the first two
 					// elements
 					element[0] ^= element[1];

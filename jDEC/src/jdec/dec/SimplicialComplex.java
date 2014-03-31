@@ -1,9 +1,12 @@
 package jdec.dec;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import jdec.dec.SimplexArray.BoundaryOperator;
 import jdec.linalg.CSRMatrix;
@@ -64,6 +67,113 @@ public class SimplicialComplex {
 				buildSimplices();
 			return simplexToIndex.get(s);
 		}
+
+		public double[] circumcenter(int index) {
+			if (circumcenter == null)
+				computeCircumcenters();
+			return circumcenter[index];
+		}
+
+		public double primalVolume(int index) {
+			if (primalVolume == null)
+				computePrimalVolume();
+			return primalVolume[index];
+		}
+
+		public double dualVolume(int index) {
+			if (dualVolume == null)
+				computeDualVolumes();
+			return dualVolume[index];
+		}
+
+		public Matrix star() {
+			if (star == null)
+				constructHodge();
+			return star;
+		}
+
+		public Matrix starInv() {
+			if (starInv == null)
+				constructHodge();
+			return starInv;
+		}
+
+		public void resetGeometry() {
+			this.circumcenter = null;
+			this.primalVolume = null;
+			this.dualVolume = null;
+			this.star = null;
+			this.starInv = null;
+		}
+
+		private void computeCircumcenters() {
+			if (circumcenter == null)
+				circumcenter = new double[nSimplices][embeddingDimension()];
+			for (int i = 0; i < nSimplices; i++)
+				circumcenter[i] = Circumcenter.circumcenter(
+						SimplicialComplex.this.vertices, simplices[i]);
+		}
+
+		private void computePrimalVolume() {
+			if (primalVolume == null)
+				primalVolume = new double[nSimplices];
+			if (dimension == embeddingDimension())
+				for (int i = 0; i < nSimplices; i++)
+					primalVolume[i] = Volume.signedVolume(
+							SimplicialComplex.this.vertices, simplices[i]);
+			else
+				for (int i = 0; i < nSimplices; i++)
+					primalVolume[i] = Volume.unsignedVolume(
+							SimplicialComplex.this.vertices, simplices[i]);
+
+		}
+
+		private void computeDualVolumes() {
+			for (Subspace sp : subspaces)
+				sp.dualVolume = new double[sp.nSimplices];
+			double[][] centers = new double[complexDimension() + 1][];
+			for (int[] s : simplices)
+				computeDualVolume(new Simplex(s), centers, complexDimension());
+		}
+
+		/**
+		 * Compute all the dual volume of this simplex and also add all the
+		 * contributions to the dual volumes of sub-elements that are related to
+		 * this one by a bounding relationship
+		 * 
+		 * @param s
+		 * @param centers
+		 * @param dimension
+		 */
+		private void computeDualVolume(Simplex s, double[][] centers,
+				int dimension) {
+			Subspace sp = subspaces[dimension];
+			int index = sp.simplexToIndex(s);
+			centers[dimension] = sp.circumcenter(index);
+			sp.dualVolume[index] += Volume.unsignedVolume(centers, dimension,
+					centers.length);
+			if (dimension > 0) {
+				for (Simplex bs : s.boundary())
+					computeDualVolume(bs, centers, dimension - 1);
+			}
+		}
+
+		private void constructHodge() {
+			double[] dataStar = new double[nSimplices];
+			double[] dataStarInv = new double[nSimplices];
+			int[] rowptr = new int[nSimplices + 1];
+			int[] cols = new int[nSimplices];
+			for (int i = 0; i < nSimplices; i++) {
+				dataStar[i] = dualVolume(i) / primalVolume(i);
+				dataStarInv[i] = 1. / dataStar[i];
+				rowptr[i] = i;
+				cols[i] = i;
+			}
+			rowptr[nSimplices] = nSimplices;
+			star = new CSRMatrix(nSimplices, nSimplices, dataStar, cols, rowptr);
+			starInv = new CSRMatrix(nSimplices, nSimplices, dataStarInv, cols,
+					rowptr);
+		}
 	}
 
 	public SimplicialComplex(SimplicialMesh mesh) {
@@ -107,7 +217,7 @@ public class SimplicialComplex {
 					parity);
 			s = boundary.uniqueFaces;
 			parity = new int[s.length];
-			simplices[l] = (s);
+			simplices[l] = s;
 			chainComplex[l] = boundary.operator;
 			parities[l] = parity;
 		}
@@ -138,68 +248,8 @@ public class SimplicialComplex {
 
 	}
 
-	private void constructHodge() {
-		for (int i = 0; i < subspaces.length; i++) {
-			int formSize = subspaces[i].nSimplices;
-			for(int i=0; i<)
-			double diagonalElement
-		}
-	}
-
-	private void computeCircumcenters(int dimension) {
-		Subspace sp = subspaces[dimension];
-		if (sp.circumcenter == null)
-			sp.circumcenter = new double[sp.nSimplices][embeddingDimension()];
-		else
-			for (double[] circ : sp.circumcenter)
-				Arrays.fill(circ, 0);
-		for (int i = 0; i < sp.nSimplices; i++)
-			sp.circumcenter[i] = Circumcenter.circumcenter(this.vertices,
-					sp.simplices[i]);
-	}
-
-	private void computePrimalVolume(int dimension) {
-		Subspace sp = subspaces[dimension];
-		if (sp.primalVolume == null)
-			sp.primalVolume = new double[sp.nSimplices];
-		else
-			Arrays.fill(sp.primalVolume, 0);
-		if (dimension == embeddingDimension())
-			for (int i = 0; i < sp.nSimplices; i++)
-				sp.primalVolume[i] = Volume.signedVolume(this.vertices,
-						sp.simplices[i]);
-		else
-			for (int i = 0; i < sp.nSimplices; i++)
-				sp.primalVolume[i] = Volume.unsignedVolume(this.vertices,
-						sp.simplices[i]);
-
-	}
-
-	private void computeDualVolume(int dimension) {
-		Subspace sp = subspaces[dimension];
-		if (sp.dualVolume == null)
-			sp.dualVolume = new double[sp.nSimplices];
-		else
-			Arrays.fill(sp.dualVolume, 0);
-		if (dimension == embeddingDimension())
-			for (int i = 0; i < sp.nSimplices; i++)
-				sp.dualVolume[i] = Volume.signedVolume(this.vertices,
-						sp.simplices[i]);
-		else
-			for (int i = 0; i < sp.nSimplices; i++)
-				sp.primalVolume[i] = Volume.unsignedVolume(this.vertices,
-						sp.simplices[i]);
-
-	}
-
-	private double dualVolume(Simplex s, double[][] points, int dimension) {
-		Subspace sp = subspaces[dimension];
-		int index = sp.simplexToIndex(s);
-
-	}
-
 	public int complexDimension() {
-		return simplices[0].length;
+		return simplices.length - 1;
 	}
 
 	public int embeddingDimension() {
@@ -222,4 +272,19 @@ public class SimplicialComplex {
 
 	}
 
+	public Set<Simplex> boundary() {
+		Object2IntMap<Simplex> faceCount = new Object2IntAVLTreeMap<Simplex>();
+		for (Simplex s : subspaces[complexDimension()].simplexToIndex.keySet())
+			for (Simplex f : s.boundary())
+				if (!faceCount.containsKey(f))
+					faceCount.put(f, 1);
+				else
+					faceCount.put(f, faceCount.getInt(f) + 1);
+		Set<Simplex> boundary = new ObjectAVLTreeSet<Simplex>();
+		for (Entry<Simplex> e : faceCount.object2IntEntrySet())
+			if (e.getIntValue() == 1)
+				boundary.add(e.getKey());
+		return boundary;
+
+	}
 }
