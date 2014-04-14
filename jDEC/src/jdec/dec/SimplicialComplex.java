@@ -12,6 +12,7 @@ import jdec.dec.SimplexArray.BoundaryOperator;
 import jdec.linalg.CSRMatrix;
 import jdec.math.Circumcenter;
 import jdec.math.LexicographicalComparator;
+import jdec.math.Parity;
 import jdec.math.Volume;
 import jdec.mesh.Simplex;
 import jdec.mesh.SimplicialMesh;
@@ -30,7 +31,7 @@ public class SimplicialComplex {
 
 	private Subspace[] subspaces;
 
-	private class Subspace {
+	class Subspace {
 		private int dimension;
 		private Matrix boundary;
 		private Matrix d;
@@ -54,6 +55,8 @@ public class SimplicialComplex {
 		}
 
 		private void buildSimplices() {
+			indexToSimplex = new Simplex[simplices.length];
+			simplexToIndex = new Object2IntAVLTreeMap<Simplex>();
 			for (int i = 0; i < nSimplices; i++) {
 				Simplex simplex = new Simplex(simplices[i], simplexParity[i]);
 				indexToSimplex[i] = simplex;
@@ -66,6 +69,14 @@ public class SimplicialComplex {
 			if (simplexToIndex == null)
 				buildSimplices();
 			return simplexToIndex.get(s);
+		}
+
+		public Matrix d() {
+			return d;
+		}
+
+		public Matrix boundary() {
+			return boundary;
 		}
 
 		public double[] circumcenter(int index) {
@@ -163,9 +174,12 @@ public class SimplicialComplex {
 			double[] dataStarInv = new double[nSimplices];
 			int[] rowptr = new int[nSimplices + 1];
 			int[] cols = new int[nSimplices];
+			double sign = 1;
+			if (dimension * (complexDimension() - dimension) % 2 != 0)
+				sign = -1;
 			for (int i = 0; i < nSimplices; i++) {
 				dataStar[i] = dualVolume(i) / primalVolume(i);
-				dataStarInv[i] = 1. / dataStar[i];
+				dataStarInv[i] = sign / dataStar[i];
 				rowptr[i] = i;
 				cols[i] = i;
 			}
@@ -186,6 +200,14 @@ public class SimplicialComplex {
 		this.mesh = new SimplicialMesh(points, elements);
 		this.vertices = mesh.getVertices();
 		buildComplex(mesh.getElements());
+	}
+
+	public int numberOfNSimplices(int n) {
+		return subspaces[n].simplices.length;
+	}
+
+	Subspace getSubspace(int n) {
+		return subspaces[n];
 	}
 
 	@Override
@@ -257,7 +279,8 @@ public class SimplicialComplex {
 	}
 
 	public chainComplex() {
-
+	for(Subspace sp : subspaces)
+		sp.boundary
 	}
 
 	public cochainComplex() {
@@ -268,8 +291,10 @@ public class SimplicialComplex {
 
 	}
 
-	public Cochain getCochain() {
-
+	public Cochain getCochain(int dimension, boolean isPrimal) {
+		if (dimension < 0 || dimension > complexDimension())
+			throw new IllegalArgumentException("Invalid dimension " + dimension);
+			new Cochain()
 	}
 
 	public Set<Simplex> boundary() {
@@ -287,4 +312,5 @@ public class SimplicialComplex {
 		return boundary;
 
 	}
+
 }

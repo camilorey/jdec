@@ -76,11 +76,15 @@ public class Simplex implements Comparable<Simplex> {
 
 	@Override
 	public int compareTo(Simplex o) {
-		int compareParity = o.parity - this.parity;
-		if (compareParity != 0)
-			return compareParity;
-		else
-			return comparator.compare(this.array, o.array);
+		// int compareParity = o.parity - this.parity;
+		// if (compareParity != 0)
+		// return compareParity;
+		// else
+		return comparator.compare(this.array, o.array);
+	}
+
+	public boolean compareParity(Simplex o) {
+		return o.parity != this.parity;
 	}
 
 }
