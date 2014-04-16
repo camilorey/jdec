@@ -21,7 +21,10 @@ public class Cochain {
 		this.space = complex.getSubspace(k);
 		this.dualSpace = complex.getSubspace(n - k);
 		this.isPrimal = isPrimal;
-		this.v = new double[complex.numberOfNSimplices(k)];
+		if (isPrimal)
+			this.v = new double[complex.numberOfNSimplices(k)];
+		else
+			this.v = new double[complex.numberOfNSimplices(n - k)];
 	}
 
 	public Cochain add(Cochain other) {

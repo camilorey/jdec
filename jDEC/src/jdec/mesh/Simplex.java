@@ -50,6 +50,21 @@ public class Simplex implements Comparable<Simplex> {
 		return boundary;
 	}
 
+	public int dimension() {
+		return array.length - 1;
+	}
+
+	public int[] toArray() {
+		int[] arrayVersion = Arrays.copyOf(array, arrayDim);
+		if (parity % 2 != 0) {
+			// change array parity by swapping first two elements
+			arrayVersion[0] ^= arrayVersion[1];
+			arrayVersion[1] ^= arrayVersion[0];
+			arrayVersion[0] ^= arrayVersion[1];
+		}
+		return arrayVersion;
+	}
+
 	@Override
 	public String toString() {
 		if (toString == null) {

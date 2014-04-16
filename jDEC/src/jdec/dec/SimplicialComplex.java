@@ -2,17 +2,17 @@ package jdec.dec;
 
 import it.unimi.dsi.fastutil.objects.Object2IntAVLTreeMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 import jdec.dec.SimplexArray.BoundaryOperator;
 import jdec.linalg.CSRMatrix;
 import jdec.math.Circumcenter;
 import jdec.math.LexicographicalComparator;
-import jdec.math.Parity;
 import jdec.math.Volume;
 import jdec.mesh.Simplex;
 import jdec.mesh.SimplicialMesh;
@@ -202,6 +202,12 @@ public class SimplicialComplex {
 		buildComplex(mesh.getElements());
 	}
 
+	public SimplicialComplex(double[][] points, Collection<Simplex> elements) {
+		this.mesh = new SimplicialMesh(points, elements);
+		this.vertices = mesh.getVertices();
+		buildComplex(mesh.getElements());
+	}
+
 	public int numberOfNSimplices(int n) {
 		return subspaces[n].simplices.length;
 	}
@@ -278,39 +284,37 @@ public class SimplicialComplex {
 		return mesh.embeddingDimension();
 	}
 
-	public chainComplex() {
-	for(Subspace sp : subspaces)
-		sp.boundary
+	public Matrix[] chainComplex() {
+		return chainComplex;
 	}
 
-	public cochainComplex() {
-
+	public Matrix[] cochainComplex() {
+		return cochainComplex;
 	}
 
-	public complex() {
-
+	public int[][][] complex() {
+		return simplices;
 	}
 
 	public Cochain getCochain(int dimension, boolean isPrimal) {
 		if (dimension < 0 || dimension > complexDimension())
 			throw new IllegalArgumentException("Invalid dimension " + dimension);
-			new Cochain()
+		return new Cochain(this, dimension, isPrimal);
 	}
 
-	public Set<Simplex> boundary() {
-		Object2IntMap<Simplex> faceCount = new Object2IntAVLTreeMap<Simplex>();
+	public Set<Simplex> boundarySimplices() {
+		ObjectSet<Simplex> boundarySimplices = new ObjectOpenHashSet<Simplex>();
 		for (Simplex s : subspaces[complexDimension()].simplexToIndex.keySet())
 			for (Simplex f : s.boundary())
-				if (!faceCount.containsKey(f))
-					faceCount.put(f, 1);
+				if (!boundarySimplices.contains(f))
+					boundarySimplices.add(f);
 				else
-					faceCount.put(f, faceCount.getInt(f) + 1);
-		Set<Simplex> boundary = new ObjectAVLTreeSet<Simplex>();
-		for (Entry<Simplex> e : faceCount.object2IntEntrySet())
-			if (e.getIntValue() == 1)
-				boundary.add(e.getKey());
-		return boundary;
+					boundarySimplices.remove(f);
+		return boundarySimplices;
 
 	}
 
+	public SimplicialComplex boundary() {
+		return new SimplicialComplex(vertices, boundarySimplices());
+	}
 }

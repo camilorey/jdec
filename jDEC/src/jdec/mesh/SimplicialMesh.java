@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+import java.util.Collection;
 import java.util.Set;
 
 import jdec.math.Combinatorial;
@@ -22,19 +23,23 @@ public class SimplicialMesh {
 	private final int manifoldDimension;
 	private final int embeddingDimension;
 
-	private final Object2IntMap<Simplex> simplexToIndex;
-	private final Set<Simplex> faces;
-	private final Object2ObjectMap<Simplex, IntSet> faceToSimplex;
-	private final IntSet[] simplexNeigbors;
+	private Object2IntMap<Simplex> simplexToIndex;
+	private Set<Simplex> faces;
+	private Object2ObjectMap<Simplex, IntSet> faceToSimplex;
+	private IntSet[] simplexNeigbors;
 
 	public SimplicialMesh(double[][] points, int[][] elements) {
 		this.vertices = points;
 		this.embeddingDimension = points[0].length;
+		this.manifoldDimension = elements[0].length;
 		this.elements = elements;
 		// TODO see if defensive copy is needed
+		build();
+	}
+
+	private void build() {
 		int min = Integer.MAX_VALUE;
 		int max = 0;
-		manifoldDimension = elements[0].length;
 		for (int[] element : elements) {
 			if (element.length != manifoldDimension)
 				throw new IllegalArgumentException("Invalid element");
@@ -45,7 +50,7 @@ public class SimplicialMesh {
 					max = index;
 			}
 		}
-		if (min < 0 || max > points.length)
+		if (min < 0 || max > vertices.length)
 			throw new IllegalArgumentException("Invalid index in elements");
 
 		simplexToIndex = new Object2IntOpenHashMap<Simplex>();
@@ -79,6 +84,22 @@ public class SimplicialMesh {
 
 			}
 		}
+	}
+
+	public SimplicialMesh(double[][] points, Collection<Simplex> simplices) {
+		this.vertices = points;
+		this.embeddingDimension = points[0].length;
+		this.elements = new int[simplices.size()][];
+		this.manifoldDimension = simplices.iterator().next().dimension();
+		int c = 0;
+		for (Simplex s : simplices) {
+			if (manifoldDimension != s.dimension())
+				throw new IllegalArgumentException(
+						"Cannot build a simplicial mesh with highest-level simplices of different dimension");
+			this.elements[c++] = s.toArray();
+
+		}
+		build();
 	}
 
 	public double[][] getVertices() {
