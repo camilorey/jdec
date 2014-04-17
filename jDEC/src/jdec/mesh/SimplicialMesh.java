@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class SimplicialMesh {
 	public SimplicialMesh(double[][] points, int[][] elements) {
 		this.vertices = points;
 		this.embeddingDimension = points[0].length;
-		this.manifoldDimension = elements[0].length;
+		this.manifoldDimension = elements[0].length - 1;
 		this.elements = elements;
 		// TODO see if defensive copy is needed
 		build();
@@ -41,7 +42,7 @@ public class SimplicialMesh {
 		int min = Integer.MAX_VALUE;
 		int max = 0;
 		for (int[] element : elements) {
-			if (element.length != manifoldDimension)
+			if (element.length != manifoldDimension + 1)
 				throw new IllegalArgumentException("Invalid element");
 			for (int index : element) {
 				if (min > index)
@@ -156,8 +157,8 @@ public class SimplicialMesh {
 		Set<Simplex> skeleton = new ObjectOpenHashSet<Simplex>();
 		for (int[] element : elements)
 			for (int[] b : Combinatorial.combinations(element, p + 1, false))
-				skeleton.add(new Simplex(b)); // the set will remove duplicates
-
+				skeleton.add(new Simplex(Arrays.copyOf(b, p + 1)));
+		// the set will remove duplicates
 		return skeleton;
 	}
 

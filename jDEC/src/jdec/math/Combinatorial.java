@@ -164,15 +164,18 @@ public class Combinatorial {
 		final T[] data = inPlace ? array : Arrays.copyOf(array, dim);
 		Arrays.sort(data);
 		return new Iterable<T[]>() {
+			@Override
 			public Iterator<T[]> iterator() {
 				return new Iterator<T[]>() {
 					private int c = -1, d, s;
 					private boolean hasNext = data.length != 0;
 
+					@Override
 					public boolean hasNext() {
 						return hasNext;
 					}
 
+					@Override
 					public T[] next() {
 						if (!hasNext)
 							throw new NoSuchElementException();
@@ -213,6 +216,7 @@ public class Combinatorial {
 						return data;
 					}
 
+					@Override
 					public void remove() {
 						throw new UnsupportedOperationException(
 								"Cannot remove a permutation");
@@ -234,15 +238,18 @@ public class Combinatorial {
 		final int[] data = inPlace ? array : Arrays.copyOf(array, dim);
 		Arrays.sort(data);
 		return new Iterable<int[]>() {
+			@Override
 			public Iterator<int[]> iterator() {
 				return new Iterator<int[]>() {
 					private int c = -1, d, s;
 					private boolean hasNext = data.length != 0;
 
+					@Override
 					public boolean hasNext() {
 						return hasNext;
 					}
 
+					@Override
 					public int[] next() {
 						if (!hasNext)
 							throw new NoSuchElementException();
@@ -283,6 +290,7 @@ public class Combinatorial {
 						return data;
 					}
 
+					@Override
 					public void remove() {
 						throw new UnsupportedOperationException(
 								"Cannot remove a permutation");
@@ -321,15 +329,18 @@ public class Combinatorial {
 		final int[] data = inPlace ? array : Arrays.copyOf(array, dim);
 		Arrays.sort(data);
 		return new Iterable<int[]>() {
+			@Override
 			public Iterator<int[]> iterator() {
 				return new Iterator<int[]>() {
 					private int h = -1, t;
 					private boolean hasNext = data.length != 0;
 
+					@Override
 					public boolean hasNext() {
 						return hasNext;
 					}
 
+					@Override
 					public int[] next() {
 						if (!hasNext)
 							throw new NoSuchElementException();
@@ -365,6 +376,7 @@ public class Combinatorial {
 						return data;
 					}
 
+					@Override
 					public void remove() {
 						throw new UnsupportedOperationException(
 								"Cannot remove a permutation");
@@ -396,15 +408,18 @@ public class Combinatorial {
 		final T[] data = inPlace ? array : Arrays.copyOf(array, dim);
 		Arrays.sort(data);
 		return new Iterable<T[]>() {
+			@Override
 			public Iterator<T[]> iterator() {
 				return new Iterator<T[]>() {
 					private int h = -1, t;
 					private boolean hasNext = data.length != 0;
 
+					@Override
 					public boolean hasNext() {
 						return hasNext;
 					}
 
+					@Override
 					public T[] next() {
 						if (!hasNext)
 							throw new NoSuchElementException();
@@ -440,6 +455,7 @@ public class Combinatorial {
 						return data;
 					}
 
+					@Override
 					public void remove() {
 						throw new UnsupportedOperationException(
 								"Cannot remove a permutation");

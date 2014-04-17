@@ -1,6 +1,11 @@
 package jdec.test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import jdec.dec.SimplexArray;
+import jdec.dec.SimplicialComplex;
 
 public class Test {
 
@@ -8,6 +13,40 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new File("/tmp/bunny.ply"));
+
+			scanner.findWithinHorizon("element vertex", 0);
+			int nPts = scanner.nextInt();
+			scanner.findWithinHorizon("element face", 0);
+			int nT = scanner.nextInt();
+			scanner.findWithinHorizon("end_header", 0);
+			double[][] vertices = new double[nPts][];
+			for (int i = 0; i < nPts; i++) {
+				vertices[i] = new double[] { scanner.nextDouble(),
+						scanner.nextDouble(), scanner.nextDouble() };
+				scanner.nextDouble();
+				scanner.nextDouble();
+			}
+
+			int[][] triangles = new int[nT][];
+			for (int i = 0; i < nT; i++) {
+				scanner.nextInt();
+				triangles[i] = new int[] { scanner.nextInt(),
+						scanner.nextInt(), scanner.nextInt() };
+			}
+			SimplicialComplex sm = new SimplicialComplex(vertices, triangles);
+
+			System.out.println("Boundary size: "
+					+ sm.boundary().numberOfNSimplices(1));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (scanner != null)
+				scanner.close();
+		}
 
 		int[][] s = new int[][] { { 0, 1 }, { 0, 2 }, { 1, 2 }, { 1, 3 } };
 		int[][] v = new int[][] { { 1, 2 }, { 0, 2 } };

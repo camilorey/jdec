@@ -8,8 +8,6 @@ import java.util.List;
 import jdec.math.LexicographicalComparator;
 import jdec.math.Parity;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 public class Simplex implements Comparable<Simplex> {
 	private final int parity;
 	private final int[] array;
@@ -44,7 +42,7 @@ public class Simplex implements Comparable<Simplex> {
 		for (int n = 0; n < arrayDim; n++) {
 			System.arraycopy(this.array, 0, boundaryElement, 0, n);
 			System.arraycopy(this.array, n + 1, boundaryElement, n, arrayDim
-					- n);
+					- n - 1);
 			boundary.add(new Simplex(boundaryElement, (this.parity + n) % 2));
 		}
 		return boundary;
@@ -81,12 +79,16 @@ public class Simplex implements Comparable<Simplex> {
 	@Override
 	public int hashCode() {
 		if (hashCode == 0) {
-			HashCodeBuilder hashCodeBuilder = new HashCodeBuilder();
-			for (int p : array)
-				hashCodeBuilder.append(p);
-			hashCode = hashCodeBuilder.append(parity).build();
+			hashCode = Arrays.hashCode(array);
 		}
 		return hashCode;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Simplex))
+			return false;
+		return Arrays.equals(array, ((Simplex) o).array);
 	}
 
 	@Override
