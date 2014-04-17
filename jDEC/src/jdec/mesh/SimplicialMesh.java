@@ -29,6 +29,8 @@ public class SimplicialMesh {
 	private Object2ObjectMap<Simplex, IntSet> faceToSimplex;
 	private IntSet[] simplexNeigbors;
 
+	private Set<Simplex> boundary;
+
 	public SimplicialMesh(double[][] points, int[][] elements) {
 		this.vertices = points;
 		this.embeddingDimension = points[0].length;
@@ -134,17 +136,19 @@ public class SimplicialMesh {
 	 * @return The set of boundary faces
 	 */
 	public Set<Simplex> boundary() {
-		Set<Simplex> boundarySet = new ObjectOpenHashSet<Simplex>();
+		if (boundary == null) {
+			boundary = new ObjectOpenHashSet<Simplex>();
 
-		for (int[] element : elements) {
-			Simplex s = new Simplex(element);
-			for (Simplex b : s.boundary())
-				if (boundarySet.contains(b)) // it occurs twice -- remove it
-					boundarySet.remove(boundarySet);
-				else
-					boundarySet.add(b); // first occurrence
+			for (int[] element : elements) {
+				Simplex s = new Simplex(element);
+				for (Simplex b : s.boundary())
+					if (boundary.contains(b)) // it occurs twice -- remove it
+						boundary.remove(b);
+					else
+						boundary.add(b); // first occurrence
+			}
 		}
-		return boundarySet;
+		return boundary;
 	}
 
 	/**

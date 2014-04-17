@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import jdec.dec.SimplexArray;
-import jdec.dec.SimplicialComplex;
+import jdec.mesh.SimplicialMesh;
 
 public class Test {
 
@@ -36,10 +36,9 @@ public class Test {
 				triangles[i] = new int[] { scanner.nextInt(),
 						scanner.nextInt(), scanner.nextInt() };
 			}
-			SimplicialComplex sm = new SimplicialComplex(vertices, triangles);
+			SimplicialMesh sm = new SimplicialMesh(vertices, triangles);
 
-			System.out.println("Boundary size: "
-					+ sm.boundary().numberOfNSimplices(1));
+			System.out.println("Boundary size: " + sm.boundary().size());
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
