@@ -31,6 +31,13 @@ public class ConstrainedProblem {
 		return constrainedVector;
 	}
 
+	public ConstrainedVector createConstrainedVector(Vector a, Vector b) {
+		if (a.size() != constrainedVector.v1.size()
+				|| b.size() != constrainedVector.v2.size())
+			throw new IllegalArgumentException("Incompatible vector sizes");
+		return new ConstrainedVector(a, b);
+	}
+
 	public static class ConstrainedOperator extends AbstractOperator {
 
 		private final Matrix A;
@@ -61,8 +68,8 @@ public class ConstrainedProblem {
 			A.multAdd(alpha, compositeX.v1, compositeY.v1);
 			// compute y.v1 += alpha*Ct*x.v2
 			C.transMultAdd(alpha, compositeX.v2, compositeY.v1);
-			// compute y.v2 += alpha*C*x.v2
-			C.multAdd(alpha, compositeX.v2, compositeY.v2);
+			// compute y.v2 += alpha*C*x.v1
+			C.multAdd(alpha, compositeX.v1, compositeY.v2);
 			return compositeY;
 		}
 
@@ -79,8 +86,8 @@ public class ConstrainedProblem {
 			A.transMultAdd(alpha, compositeX.v1, compositeY.v1);
 			// compute y.v1 += alpha*Ct*x.v2
 			C.transMultAdd(alpha, compositeX.v2, compositeY.v1);
-			// compute y.v2 += alpha*C*x.v2
-			C.multAdd(alpha, compositeX.v2, compositeY.v2);
+			// compute y.v2 += alpha*C*x.v1
+			C.multAdd(alpha, compositeX.v1, compositeY.v2);
 			return compositeY;
 		}
 
