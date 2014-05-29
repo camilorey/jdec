@@ -16,18 +16,15 @@ public class StackedVector extends AbstractVector {
 
 	private final IntList vLengths;
 
-	private final int size;
-
 	private StackedVector(List<Vector> vectors, int size) {
 		super(size);
 		this.vectors = vectors;
 		vLengths = new IntArrayList();
 		for (Vector v : this.vectors)
 			vLengths.add(v.size());
-		this.size = size;
 	}
 
-	public StackedVector stack(Vector... vectors) {
+	public static StackedVector stack(Vector... vectors) {
 		if (vectors.length == 0)
 			throw new IllegalArgumentException(
 					"Must specify at least one vector");
@@ -40,7 +37,7 @@ public class StackedVector extends AbstractVector {
 		return new StackedVector(vs, size);
 	}
 
-	public StackedVector stack(List<Vector> vectors) {
+	public static StackedVector stack(List<Vector> vectors) {
 		if (vectors.size() == 0)
 			throw new IllegalArgumentException(
 					"Must specify at least one vector");

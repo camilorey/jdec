@@ -1,6 +1,7 @@
 package jdec.linalg;
 
 import no.uib.cipr.matrix.AbstractMatrix;
+import no.uib.cipr.matrix.DenseVector;
 import no.uib.cipr.matrix.Matrix;
 import no.uib.cipr.matrix.Vector;
 
@@ -103,6 +104,24 @@ public abstract class AbstractOperator extends AbstractMatrix {
 	@Override
 	public double norm(Norm type) {
 		throw new UnsupportedOperationException();
+	}
+
+	public abstract Vector getImageVectorTemplate();
+
+	public abstract Vector getDomainVectorTemplate();
+
+	protected Vector getImageVectorTemplateOf(Matrix A) {
+		if (A instanceof AbstractOperator)
+			return ((AbstractOperator) A).getImageVectorTemplate();
+		else
+			return new DenseVector(numRows());
+	}
+
+	protected Vector getDomainVectorTemplateOf(Matrix A) {
+		if (A instanceof AbstractOperator)
+			return ((AbstractOperator) A).getDomainVectorTemplate();
+		else
+			return new DenseVector(numColumns());
 	}
 
 }

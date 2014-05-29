@@ -91,4 +91,21 @@ public class DiagonalStackOperator extends AbstractOperator {
 			mT.add(m.transpose());
 		return DiagonalStackOperator.stack(mT);
 	}
+
+	@Override
+	public Vector getImageVectorTemplate() {
+		List<Vector> templates = new ArrayList<Vector>();
+		for (Matrix matrix : matrices)
+			templates.add(getImageVectorTemplateOf(matrix));
+		return StackedVector.stack(templates);
+	}
+
+	@Override
+	public Vector getDomainVectorTemplate() {
+		List<Vector> templates = new ArrayList<Vector>();
+		for (Matrix matrix : matrices)
+			templates.add(getDomainVectorTemplateOf(matrix));
+		return StackedVector.stack(templates);
+	}
+
 }

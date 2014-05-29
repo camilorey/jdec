@@ -94,4 +94,17 @@ public class VerticalStackOperator extends AbstractOperator {
 		return HorizontalStackOperator.stack(mT);
 	}
 
+	@Override
+	public Vector getImageVectorTemplate() {
+		List<Vector> templates = new ArrayList<Vector>();
+		for (Matrix matrix : matrices)
+			templates.add(getImageVectorTemplateOf(matrix));
+		return StackedVector.stack(templates);
+	}
+
+	@Override
+	public Vector getDomainVectorTemplate() {
+		return getDomainVectorTemplateOf(matrices.get(0));
+	}
+
 }

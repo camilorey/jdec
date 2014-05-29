@@ -12,9 +12,12 @@ public class OperatorAtA extends AbstractOperator {
 
 	private final Queue<Vector> vectorPool;
 
-	protected OperatorAtA(Matrix A) {
+	private final Vector template;
+
+	public OperatorAtA(Matrix A) {
 		super(A.numColumns(), A.numColumns());
 		this.A = A;
+		this.template = getImageVectorTemplateOf(A);
 		vectorPool = new LinkedList<Vector>();
 	}
 
@@ -22,7 +25,7 @@ public class OperatorAtA extends AbstractOperator {
 	public Vector multAdd(double alpha, Vector x, Vector y) {
 		Vector Ax;
 		if ((Ax = vectorPool.poll()) == null)
-			Ax = x.copy();
+			Ax = template.copy();
 		// compute Ax
 		A.mult(x, Ax);
 		// compute At(Ax)+y
@@ -48,6 +51,16 @@ public class OperatorAtA extends AbstractOperator {
 	@Override
 	public Matrix transpose() {
 		return this;
+	}
+
+	@Override
+	public Vector getImageVectorTemplate() {
+		return getDomainVectorTemplateOf(A);
+	}
+
+	@Override
+	public Vector getDomainVectorTemplate() {
+		return getDomainVectorTemplateOf(A);
 	}
 
 }

@@ -50,7 +50,7 @@ public class ConstrainedProblem {
 						"Constrained problems can only be defined on square operators");
 			if (C.numColumns() != A.numColumns())
 				throw new IllegalArgumentException(
-						"Constraine matrix incompatible with problm operator");
+						"Constraine matrix incompatible with problem operator");
 			this.A = A;
 			this.C = C;
 		}
@@ -102,6 +102,18 @@ public class ConstrainedProblem {
 			return new ConstrainedOperator(A.transpose(), C);
 		}
 
+		@Override
+		public Vector getImageVectorTemplate() {
+			return StackedVector.stack(getImageVectorTemplateOf(A),
+					getImageVectorTemplateOf(C));
+		}
+
+		@Override
+		public Vector getDomainVectorTemplate() {
+			return StackedVector.stack(getDomainVectorTemplateOf(A),
+					getImageVectorTemplateOf(C));
+		}
+
 	}
 
 	public static class ConstrainedVector extends AbstractVector {
@@ -119,8 +131,7 @@ public class ConstrainedProblem {
 
 		@Override
 		public Iterator<VectorEntry> iterator() {
-			// TODO Auto-generated method stub
-			return null;
+			throw new UnsupportedOperationException("Not yet implemented");
 		}
 
 		@Override

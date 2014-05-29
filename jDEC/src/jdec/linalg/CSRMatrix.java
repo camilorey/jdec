@@ -185,4 +185,14 @@ public class CSRMatrix extends AbstractOperator {
 
 		}
 	}
+
+	@Override
+	public Vector getImageVectorTemplate() {
+		return new DenseVector(numRows());
+	}
+
+	@Override
+	public Vector getDomainVectorTemplate() {
+		return new DenseVector(numColumns());
+	}
 }
