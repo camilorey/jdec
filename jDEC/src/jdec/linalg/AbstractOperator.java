@@ -110,18 +110,18 @@ public abstract class AbstractOperator extends AbstractMatrix {
 
 	public abstract Vector getDomainVectorTemplate();
 
-	protected Vector getImageVectorTemplateOf(Matrix A) {
+	protected static Vector getImageVectorTemplateOf(Matrix A) {
 		if (A instanceof AbstractOperator)
 			return ((AbstractOperator) A).getImageVectorTemplate();
 		else
-			return new DenseVector(numRows());
+			return new DenseVector(A.numRows());
 	}
 
 	protected Vector getDomainVectorTemplateOf(Matrix A) {
 		if (A instanceof AbstractOperator)
 			return ((AbstractOperator) A).getDomainVectorTemplate();
 		else
-			return new DenseVector(numColumns());
+			return new DenseVector(A.numColumns());
 	}
 
 }
