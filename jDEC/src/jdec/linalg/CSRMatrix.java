@@ -36,7 +36,7 @@ public class CSRMatrix extends AbstractOperator {
 		if (!(x instanceof DenseVector) || !(y instanceof DenseVector))
 			throw new UnsupportedOperationException();
 		double[] xd = ((DenseVector) x).getData();
-		double[] yd = ((DenseVector) x).getData();
+		double[] yd = ((DenseVector) y).getData();
 		double scal;
 		for (int i = 0; i < numRows; i++) {
 			scal = 0;
@@ -52,7 +52,7 @@ public class CSRMatrix extends AbstractOperator {
 		if (!(x instanceof DenseVector) || !(y instanceof DenseVector))
 			throw new UnsupportedOperationException();
 		double[] xd = ((DenseVector) x).getData();
-		double[] yd = ((DenseVector) x).getData();
+		double[] yd = ((DenseVector) y).getData();
 		if (alpha == 0)
 			return y;
 		y.scale(1 / alpha);
