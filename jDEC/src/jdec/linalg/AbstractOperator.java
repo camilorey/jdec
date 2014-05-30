@@ -117,7 +117,7 @@ public abstract class AbstractOperator extends AbstractMatrix {
 			return new DenseVector(A.numRows());
 	}
 
-	protected Vector getDomainVectorTemplateOf(Matrix A) {
+	protected static Vector getDomainVectorTemplateOf(Matrix A) {
 		if (A instanceof AbstractOperator)
 			return ((AbstractOperator) A).getDomainVectorTemplate();
 		else
